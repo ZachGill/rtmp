@@ -1,4 +1,4 @@
-module github.com/torresjeff/rtmp
+module github.com/ZachGill/rtmp
 
 go 1.14
 
@@ -7,5 +7,3 @@ require (
 	github.com/pkg/errors v0.9.1
 	go.uber.org/zap v1.16.0
 )
-
-replace github.com/torresjeff/rtmp => github.com/ZachGill/rtmp v0.0.0-20210303201626-9aba915a956e

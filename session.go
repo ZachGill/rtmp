@@ -2,10 +2,10 @@ package rtmp
 
 import (
 	"fmt"
-	"github.com/torresjeff/rtmp/audio"
-	"github.com/torresjeff/rtmp/config"
-	"github.com/torresjeff/rtmp/rand"
-	"github.com/torresjeff/rtmp/video"
+	"github.com/ZachGill/rtmp/audio"
+	"github.com/ZachGill/rtmp/config"
+	"github.com/ZachGill/rtmp/rand"
+	"github.com/ZachGill/rtmp/video"
 	"go.uber.org/zap"
 )
 

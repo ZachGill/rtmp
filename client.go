@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"github.com/torresjeff/rtmp/config"
+	"github.com/ZachGill/rtmp/config"
 	"io"
 	"net"
 	"net/url"

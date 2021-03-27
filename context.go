@@ -3,7 +3,7 @@ package rtmp
 import (
 	"errors"
 	"fmt"
-	"github.com/torresjeff/rtmp/config"
+	"github.com/ZachGill/rtmp/config"
 	"sync"
 )
 

@@ -4,10 +4,10 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
-	"github.com/torresjeff/rtmp/amf/amf0"
-	"github.com/torresjeff/rtmp/audio"
-	"github.com/torresjeff/rtmp/config"
-	"github.com/torresjeff/rtmp/video"
+	"github.com/ZachGill/rtmp/amf/amf0"
+	"github.com/ZachGill/rtmp/audio"
+	"github.com/ZachGill/rtmp/config"
+	"github.com/ZachGill/rtmp/video"
 )
 
 // Control message types

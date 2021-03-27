@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
-	"github.com/torresjeff/rtmp/amf/amf0"
+	"github.com/ZachGill/rtmp/amf/amf0"
 	"time"
 )
 
@@ -24,15 +24,15 @@ type Foo struct {
 
 func main() {
 	obj := amf0.ECMAArray{
-		"age": 4,
+		"age":  4,
 		"name": "Jefff",
 		//"timeee": time.Now(),
 		"objjj": map[string]interface{}{
-				"ffff": 2321.543,
-				"aaa": true,
-				"obj2": map[string]interface{}{
-					"time": time.Now(),
-				},
+			"ffff": 2321.543,
+			"aaa":  true,
+			"obj2": map[string]interface{}{
+				"time": time.Now(),
+			},
 		},
 	}
 

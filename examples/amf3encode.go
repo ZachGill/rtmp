@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
-	"github.com/torresjeff/rtmp/amf/amf3"
+	"github.com/ZachGill/rtmp/amf/amf3"
 	"time"
 )
 

@@ -2,7 +2,7 @@
 RTMP server written in Go (Golang) that allows stream publishing.
 
 ## Install
-`go get github.com/torresjeff/rtmp`
+`go get github.com/ZachGill/rtmp`
 
 ## How to start your RTMP server
 Start up a server for the ingestion/playback of an RTMP stream (default port is 1935):
@@ -11,7 +11,7 @@ Start up a server for the ingestion/playback of an RTMP stream (default port is 
 package main
 
 import (
-	"github.com/torresjeff/rtmp"
+	"github.com/ZachGill/rtmp"
 	"log"
 )
 
@@ -27,9 +27,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/torresjeff/rtmp"
-	"github.com/torresjeff/rtmp/audio"
-	"github.com/torresjeff/rtmp/video"
+	"github.com/ZachGill/rtmp"
+	"github.com/ZachGill/rtmp/audio"
+	"github.com/ZachGill/rtmp/video"
 	"log"
 )
 

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/torresjeff/rtmp"
+	"github.com/ZachGill/rtmp"
 	"go.uber.org/zap"
 )
 

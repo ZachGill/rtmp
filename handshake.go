@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	"github.com/torresjeff/rtmp/rand"
+	"github.com/ZachGill/rtmp/rand"
 	"io"
 )
 

@@ -3,8 +3,8 @@ package rtmp
 import (
 	"bufio"
 	"fmt"
+	"github.com/ZachGill/rtmp/config"
 	"github.com/pkg/errors"
-	"github.com/torresjeff/rtmp/config"
 	"go.uber.org/zap"
 	"io"
 	"net"

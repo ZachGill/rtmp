@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/torresjeff/rtmp"
-	"github.com/torresjeff/rtmp/audio"
-	"github.com/torresjeff/rtmp/video"
+	"github.com/ZachGill/rtmp"
+	"github.com/ZachGill/rtmp/audio"
+	"github.com/ZachGill/rtmp/video"
 	"log"
 )
 

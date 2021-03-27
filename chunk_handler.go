@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"encoding/binary"
 	"fmt"
+	"github.com/ZachGill/rtmp/config"
 	"github.com/pkg/errors"
-	"github.com/torresjeff/rtmp/config"
 	"io"
 )
 
