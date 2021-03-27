@@ -5,12 +5,10 @@ import (
 	"github.com/ZachGill/rtmp/audio"
 	"github.com/ZachGill/rtmp/config"
 	"github.com/ZachGill/rtmp/rand"
-	"github.com/ZachGill/rtmp/video"
 	"go.uber.org/zap"
 )
 
 type AudioCallback func(format audio.Format, sampleRate audio.SampleRate, sampleSize audio.SampleSize, channels audio.Channel, payload []byte, timestamp uint32)
-type VideoCallback func(frameType video.FrameType, codec video.Codec, payload []byte, timestamp uint32)
 type MetadataCallback func(metadata map[string]interface{})
 
 type surroundSound struct {
@@ -61,7 +59,6 @@ type MediaServer interface {
 	onDeleteStream(args map[string]interface{}, streamID float64)
 	onCloseStream(csID uint32, transactionId float64, args map[string]interface{})
 	onAudioMessage(format audio.Format, sampleRate audio.SampleRate, sampleSize audio.SampleSize, channels audio.Channel, payload []byte, timestamp uint32)
-	onVideoMessage(frameType video.FrameType, codec video.Codec, payload []byte, timestamp uint32)
 	onMetadata(metadata map[string]interface{})
 	onPlay(streamKey string, startTime float64)
 
@@ -83,7 +80,6 @@ type Session struct {
 
 	// Callbacks (for RTMP clients)
 	OnAudio    AudioCallback
-	OnVideo    VideoCallback
 	OnMetadata MetadataCallback
 
 	// Interprets messages, calling the appropriate callback on the session. Also in charge of sending messages.
@@ -115,7 +111,7 @@ func NewSession(logger *zap.Logger, b *Broadcaster) *Session {
 	return session
 }
 
-func NewClientSession(app string, tcUrl string, streamKey string, audioCallback AudioCallback, videoCallback VideoCallback, metadataCallback MetadataCallback) *Session {
+func NewClientSession(app string, tcUrl string, streamKey string, audioCallback AudioCallback, metadataCallback MetadataCallback) *Session {
 	session := &Session{
 		sessionID:  rand.GenerateUuid(),
 		isClient:   true,
@@ -123,7 +119,6 @@ func NewClientSession(app string, tcUrl string, streamKey string, audioCallback 
 		tcUrl:      tcUrl,
 		streamKey:  streamKey,
 		OnAudio:    audioCallback,
-		OnVideo:    videoCallback,
 		OnMetadata: metadataCallback,
 		active:     true,
 	}
@@ -440,27 +435,6 @@ func (session *Session) onAudioMessage(format audio.Format, sampleRate audio.Sam
 	session.broadcaster.BroadcastAudio(session.streamKey, payload, timestamp)
 }
 
-// videoData is the full payload (it has the video headers at the beginning of the payload), for easy forwarding
-func (session *Session) onVideoMessage(frameType video.FrameType, codec video.Codec, payload []byte, timestamp uint32) {
-	// This is not for the RTMP server. RTMP servers don't have the option to specify callback. Only RTMP clients use this for now
-	if session.OnVideo != nil {
-		session.OnVideo(frameType, codec, payload, timestamp)
-		return
-	}
-
-	// If this is a client session, no further processing should be done. i.e: no need to broadcast, since we're only receiving data.
-	// TODO: maybe caching the AAC/ACV sequence headers will be necessary
-	if session.isClient {
-		return
-	}
-
-	// cache avc sequence header to send to playback clients when they connect
-	if codec == video.H264 && video.AVCPacketType(payload[1]) == video.AVCSequenceHeader {
-		session.broadcaster.SetAvcSequenceHeaderForPublisher(session.streamKey, payload)
-	}
-	session.broadcaster.BroadcastVideo(session.streamKey, payload, timestamp)
-}
-
 func (session *Session) onPlay(streamKey string, startTime float64) {
 	session.streamKey = streamKey
 
@@ -474,7 +448,6 @@ func (session *Session) onPlay(streamKey string, startTime float64) {
 		if config.Debug {
 			fmt.Printf("sending video onPlay, sequence header with timestamp: 0, body size: %d\n", len(avcSeqHeader))
 		}
-		session.messageManager.sendVideo(avcSeqHeader, 0)
 	}
 
 	aacSeqHeader := session.broadcaster.GetAacSequenceHeaderForPublisher(streamKey)
@@ -494,10 +467,6 @@ func (session *Session) onPlay(streamKey string, startTime float64) {
 
 func (session *Session) SendAudio(audio []byte, timestamp uint32) {
 	session.messageManager.sendAudio(audio, timestamp)
-}
-
-func (session *Session) SendVideo(video []byte, timestamp uint32) {
-	session.messageManager.sendVideo(video, timestamp)
 }
 
 func (session *Session) SendMetadata(metadata map[string]interface{}) {

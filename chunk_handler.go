@@ -24,7 +24,6 @@ const (
 	// consistent in sending the same type of data through the same chunk stream id
 	ProtocolChannel uint8 = 2
 	AudioChannel    uint8 = 4
-	VideoChannel    uint8 = 7
 )
 
 const DefaultMaximumChunkSize = 128
@@ -338,18 +337,11 @@ func (chunkHandler *ChunkHandler) ReadChunkData(header ChunkHeader) (payload []b
 	// Check if the length of the message is greater than the chunk size (default chunk size is 128 if no Set Chunk Size message has been received).
 	// If it is, we have to assemble the complete message from various chunks.
 	if messageLength > chunkHandler.inChunkSize {
-		//fmt.Println("assembling message, encountered chunk type:", header.BasicHeader.FMT)
 		payload, n, err = chunkHandler.assembleMessage(messageLength)
-		//if header.MessageHeader.MessageTypeID == VideoMessage {
-		//	fmt.Printf("assembled message of type: %d, message length: %d\n", header.MessageHeader.MessageTypeID, messageLength)
-		//}
 		if err != nil {
 			return payload, n, err
 		}
 	} else {
-		//if header.MessageHeader.MessageTypeID == VideoMessage {
-		//	fmt.Printf("read chunk data, no need to assemble message, type: %d, message length: %d\n", header.MessageHeader.MessageTypeID, messageLength)
-		//}
 		payload = make([]byte, messageLength)
 		n, err = io.ReadFull(chunkHandler.socketr, payload)
 		if err != nil {

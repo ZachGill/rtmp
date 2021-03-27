@@ -1,11 +1,12 @@
 package rtmp
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // A subscriber gets sent audio, video and data messages that flow in a particular stream (identified with streamKey)
 type Subscriber interface {
 	SendAudio(audio []byte, timestamp uint32)
-	SendVideo(video []byte, timestamp uint32)
 	SendMetadata(metadata map[string]interface{})
 	GetID() string
 	SendEndOfStream()
@@ -45,19 +46,6 @@ func (b *Broadcaster) BroadcastAudio(streamKey string, audio []byte, timestamp u
 	}
 	for _, sub := range subscribers {
 		sub.SendAudio(audio, timestamp)
-	}
-	return nil
-}
-
-func (b *Broadcaster) BroadcastVideo(streamKey string, video []byte, timestamp uint32) error {
-	subscribers, err := b.context.GetSubscribersForStream(streamKey)
-	if err != nil {
-		fmt.Println("broadcaster: BroadcastVideo: error getting subscribers for stream, " + err.Error())
-		return err
-	}
-
-	for _, sub := range subscribers {
-		sub.SendVideo(video, timestamp)
 	}
 	return nil
 }

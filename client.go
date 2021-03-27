@@ -20,7 +20,6 @@ type Client struct {
 	streamKey  string
 	url        *url.URL
 	OnAudio    AudioCallback
-	OnVideo    VideoCallback
 	OnMetadata MetadataCallback
 }
 
@@ -70,7 +69,7 @@ func (c *Client) Connect(addr string) error {
 	socketr := bufio.NewReaderSize(conn, config.BuffioSize)
 	socketw := bufio.NewWriterSize(conn, config.BuffioSize)
 	tcUrl := "rtmp://" + conn.RemoteAddr().String() + "/" + c.app
-	client := NewClientSession(c.app, tcUrl, c.streamKey, c.OnAudio, c.OnVideo, c.OnMetadata)
+	client := NewClientSession(c.app, tcUrl, c.streamKey, c.OnAudio, c.OnMetadata)
 	client.messageManager = NewMessageManager(client, NewHandshaker(socketr, socketw), NewChunkHandler(socketr, socketw))
 	err = client.StartPlayback()
 	if err != nil && err != io.EOF {

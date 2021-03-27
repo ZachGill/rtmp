@@ -7,7 +7,6 @@ import (
 	"github.com/ZachGill/rtmp/amf/amf0"
 	"github.com/ZachGill/rtmp/audio"
 	"github.com/ZachGill/rtmp/config"
-	"github.com/ZachGill/rtmp/video"
 )
 
 // Control message types
@@ -119,10 +118,7 @@ func (m *MessageManager) interpretMessage(header ChunkHeader, payload []byte) er
 		//	header.MessageHeader.MessageStreamID, header.MessageHeader.Timestamp, header.ElapsedTime, header.MessageHeader.MessageLength)
 		return m.handleAudioMessage(header.BasicHeader.ChunkStreamID, header.MessageHeader.MessageStreamID, payload, header.ElapsedTime)
 	case VideoMessage:
-		//fmt.Print(" video\n")
-		//fmt.Printf("video message: fmt %d, chunk stream id %d, message stream id %d, timestamp %d, elapsed time %d, message length %d\n", header.BasicHeader.FMT, header.BasicHeader.ChunkStreamID,
-		//	header.MessageHeader.MessageStreamID, header.MessageHeader.Timestamp, header.ElapsedTime, header.MessageHeader.MessageLength)
-		return m.handleVideoMessage(header.BasicHeader.ChunkStreamID, header.MessageHeader.MessageStreamID, payload, header.ElapsedTime)
+		return nil
 	default:
 		return errors.New(fmt.Sprintf("message manager: received unknown message type ID in header, ID (decimal): %d", header.MessageHeader.MessageTypeID))
 	}
@@ -333,22 +329,6 @@ func (m *MessageManager) handleAudioMessage(chunkStreamID uint32, messageStreamI
 	return nil
 }
 
-func (m *MessageManager) handleVideoMessage(csID uint32, messageStreamID uint32, payload []byte, timestamp uint32) error {
-	//hash := make([]byte, 0)
-	//sha256Hash := sha256.New()
-	//sha256Hash.Reset()
-	//sha256Hash.Write(payload)
-	//hash = sha256Hash.Sum(hash)
-	//fmt.Println("received video, hash:", hash)
-	// Header contains frame type (key frame, i-frame, etc.) and format/codec (H264, etc.)
-	videoHeader := payload[0]
-	frameType := video.FrameType((videoHeader >> 4) & 0x0F)
-	codec := video.Codec(videoHeader & 0x0F)
-
-	m.session.onVideoMessage(frameType, codec, payload, timestamp)
-	return nil
-}
-
 func (m *MessageManager) SetChunkSize(size uint32) {
 	m.chunkHandler.SetChunkSize(size)
 }
@@ -436,65 +416,6 @@ func (m *MessageManager) sendAudio(audio []byte, timestamp uint32) {
 	m.chunkHandler.send(header, audio)
 	//if err != nil {
 	//	fmt.Println("error sending audio", err)
-	//}
-	//fmt.Println("bytes written:", n)
-}
-
-func (m *MessageManager) sendVideo(video []byte, timestamp uint32) {
-	//video = append([]byte{byte(0x27), 1, 0, 0, 0x50}, video...)
-	var header []byte
-	isExtendedTimestamp := timestamp >= 0xFFFFFF
-	messageLength := len(video)
-
-	// Always send video as type 0 chunk for playback clients
-	if isExtendedTimestamp {
-		header = make([]byte, 16)
-		// fmt = 0 (chunk header - type 0) and chunk stream ID = 5 (video)
-		header[0] = VideoChannel
-
-		// since we have an extended timestamp, fill the timestamp with 0xFFFFFF
-		header[1] = 0xFF
-		header[2] = 0xFF
-		header[3] = 0xFF
-
-		// Body size
-		header[4] = byte((messageLength >> 16) & 0xFF)
-		header[5] = byte((messageLength >> 8) & 0xFF)
-		header[6] = byte(messageLength)
-
-		// Type ID
-		header[7] = VideoMessage
-
-		// Extended timestamp
-		binary.BigEndian.PutUint32(header[8:], timestamp)
-
-		binary.LittleEndian.PutUint32(header[12:], 1)
-	} else {
-		header = make([]byte, 12)
-		// fmt = 0 (chunk header - type 0) and chunk stream ID = 5 (video)
-		header[0] = VideoChannel
-
-		// timestamp
-		header[1] = byte((timestamp >> 16) & 0xFF)
-		header[2] = byte((timestamp >> 8) & 0xFF)
-		header[3] = byte(timestamp)
-
-		// Body size
-		header[4] = byte((messageLength >> 16) & 0xFF)
-		header[5] = byte((messageLength >> 8) & 0xFF)
-		header[6] = byte(messageLength)
-
-		// Type ID
-		header[7] = VideoMessage
-
-		binary.LittleEndian.PutUint32(header[8:], 1)
-	}
-	err := m.chunkHandler.send(header, video)
-	if err != nil {
-		fmt.Println("message manager received error in send:", err)
-	}
-	//if err != nil {
-	//	fmt.Println("error sending video", err)
 	//}
 	//fmt.Println("bytes written:", n)
 }

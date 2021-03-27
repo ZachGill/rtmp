@@ -4,16 +4,11 @@ import (
 	"fmt"
 	"github.com/ZachGill/rtmp"
 	"github.com/ZachGill/rtmp/audio"
-	"github.com/ZachGill/rtmp/video"
 	"log"
 )
 
 func OnAudio(format audio.Format, sampleRate audio.SampleRate, sampleSize audio.SampleSize, channels audio.Channel, payload []byte, timestamp uint32) {
 	fmt.Println("client: on audio")
-}
-
-func OnVideo(frameType video.FrameType, codec video.Codec, payload []byte, timestamp uint32) {
-	fmt.Println("client: on video")
 }
 
 func OnMetadata(metadata map[string]interface{}) {
@@ -24,7 +19,6 @@ func main() {
 	// Specify audio, video and metadata callbacks
 	client := &rtmp.Client{
 		OnAudio:    OnAudio,
-		OnVideo:    OnVideo,
 		OnMetadata: OnMetadata,
 	}
 
