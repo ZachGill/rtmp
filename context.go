@@ -18,6 +18,7 @@ type ContextStore interface {
 	GetAvcSequenceHeaderForPublisher(streamKey string) []byte
 	SetAacSequenceHeaderForPublisher(streamKey string, payload []byte)
 	GetAacSequenceHeaderForPublisher(streamKey string) []byte
+	GetStreams() map[string][]Subscriber
 }
 
 type InMemoryContext struct {
@@ -38,6 +39,12 @@ func NewInMemoryContext() *InMemoryContext {
 		avcSequenceHeaderCache: make(map[string][]byte),
 		aacSequenceHeaderCache: make(map[string][]byte),
 	}
+}
+
+func (c *InMemoryContext) GetStreams() map[string][]Subscriber {
+	c.subMutex.RLock()
+	defer c.subMutex.RUnlock()
+	return c.subscribers
 }
 
 // Registers the session in the broadcaster to keep a reference to all open subscribers
