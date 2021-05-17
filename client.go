@@ -1,5 +1,5 @@
 package rtmp
-
+//uselesscomment
 import (
 	"bufio"
 	"errors"
